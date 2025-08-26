@@ -161,14 +161,14 @@
   let applications = [];
 
   function parseCSV(text) {
-    const lines = text.trim().split('\n');
+    const lines = text.trim().split('\n').filter(line => line.trim() !== '');
     const headers = lines.shift().split(',').map(h => h.trim());
     return lines.map(line => {
       const data = line.split(',').map(d => d.trim());
       const obj = {};
       headers.forEach((h, i) => obj[h] = data[i] || '');
       return obj;
-    });
+    }).filter(app => app['Task']); // <-- ignore rows without a Task
   }
 
   const appList = document.getElementById('app-list');
