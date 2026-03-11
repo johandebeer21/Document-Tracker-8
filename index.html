@@ -5,36 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document Tracker | Official Client Portal</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
     :root {
-      --clr-done: #10b981;        /* Green */
-      --clr-progress: #2563eb;    /* Corporate Blue */
-      --clr-not-started: #dc2626; /* Alert Red */
+      --clr-done: #10b981;
+      --clr-progress: #2563eb;
+      --clr-not-started: #dc2626;
       --clr-dark: #0f172a;
       --clr-bg: #f8fafc;
       --clr-border: #e2e8f0;
       --clr-text-muted: #64748b;
+      --clr-whatsapp: #25d366;
     }
 
     * { box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background-color: var(--clr-bg); margin: 0; color: #1e293b; -webkit-font-smoothing: antialiased; }
 
-    /* Pulsating Blue Animation for In-Progress steps */
     @keyframes pulse-blue {
       0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); transform: scale(1); }
       70% { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); transform: scale(1.05); }
       100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); transform: scale(1); }
     }
 
+    /* Floating WhatsApp Button Animation */
+    @keyframes pulse-green {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+
     .nav { background: var(--clr-dark); color: #fff; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .nav-logo { font-weight: 800; font-size: 1rem; letter-spacing: 1px; }
     .nav-label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; }
 
-    .container { padding: 20px; max-width: 900px; margin: 0 auto; }
+    .container { padding: 20px; max-width: 900px; margin: 0 auto; min-height: calc(100vh - 250px); }
     .card { background: #fff; border-radius: 12px; border: 1px solid var(--clr-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; overflow: hidden; }
 
-    /* Top Summary Section */
+    /* Header Section */
     .header-section { padding: 40px 24px; text-align: center; border-bottom: 1px solid var(--clr-border); }
     .live-badge { display: inline-block; background: #f1f5f9; padding: 5px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
     .main-status-text { margin: 0 0 20px 0; font-size: 2.4rem; font-weight: 900; text-transform: uppercase; color: var(--clr-dark); letter-spacing: -1px; }
@@ -42,47 +49,97 @@
     .pill { background: var(--clr-bg); border: 1px solid var(--clr-border); padding: 8px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: var(--clr-text-muted); }
     .pill strong { color: var(--clr-dark); }
 
-    /* Stepper Visualization */
+    /* Stepper */
     .stepper-box { padding: 35px 24px; }
     .stepper { position: relative; padding-left: 20px; border-left: 3px solid var(--clr-border); display: flex; flex-direction: column; gap: 30px; margin-left: 10px; }
-    
     .step-item { display: flex; align-items: center; position: relative; margin-left: -33px; }
     .step-dot { width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 3px solid var(--clr-border); z-index: 5; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
-    
     .step-item.done .step-dot { background: var(--clr-done); border-color: var(--clr-done); color: #fff; font-size: 14px; font-weight: bold; }
     .step-item.in-progress .step-dot { border-color: var(--clr-progress); border-width: 4px; animation: pulse-blue 2s infinite; }
-    .step-item.not-started .step-dot { border-color: var(--clr-border); }
-
     .step-label { margin-left: 18px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; color: var(--clr-dark); }
-    .step-item.not-started .step-label { color: var(--clr-text-muted); }
 
-    /* Bottom Grid Sections */
+    /* Grid */
     .grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
     @media (min-width: 768px) { .grid { grid-template-columns: 1.8fr 1fr; } }
-
     .section-title { background: #fcfdfe; padding: 16px 24px; border-bottom: 1px solid var(--clr-border); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--clr-dark); letter-spacing: 1px; }
 
-    /* Timeline History Feed */
+    /* Timeline & History */
     .history-feed { padding: 24px; }
-    .update-group { margin-bottom: 30px; }
     .update-header { font-weight: 900; font-size: 0.85rem; color: var(--clr-dark); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; gap: 10px; }
-
     .event-card { display: flex; margin-bottom: 20px; align-items: flex-start; }
-    .event-dates { min-width: 140px; font-size: 0.72rem; font-weight: 700; color: var(--clr-text-muted); line-height: 1.5; text-transform: uppercase; }
-    .event-body { display: flex; flex-direction: column; }
-    .event-task-name { font-weight: 800; font-size: 0.95rem; color: var(--clr-dark); margin-bottom: 4px; }
-    
-    /* Status Text Colors */
-    .status-txt { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .event-dates { min-width: 140px; font-size: 0.72rem; font-weight: 700; color: var(--clr-text-muted); text-transform: uppercase; }
+    .status-txt { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
     .status-txt.done { color: var(--clr-done); }
     .status-txt.progress { color: var(--clr-progress); }
     .status-txt.not { color: var(--clr-not-started); }
 
-    /* Sidebar Case File */
+    /* Case Info */
     .case-info { padding: 24px; }
     .info-row { margin-bottom: 18px; }
-    .info-label { font-size: 0.65rem; font-weight: 700; color: var(--clr-text-muted); text-transform: uppercase; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .info-label { font-size: 0.65rem; font-weight: 700; color: var(--clr-text-muted); text-transform: uppercase; display: block; margin-bottom: 4px; }
     .info-value { font-size: 1rem; font-weight: 700; color: var(--clr-dark); }
+
+    /* --- CLEAN MINIMAL FOOTER --- */
+    .footer {
+      margin-top: 60px;
+      padding: 30px 24px;
+      background: transparent;
+      border-top: 1px solid var(--clr-border);
+    }
+    .footer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0.8;
+    }
+    .footer-left {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--clr-dark);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .footer-right {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--clr-text-muted);
+      text-align: right;
+    }
+
+    /* --- FLOATING WHATSAPP BUTTON --- */
+    .whatsapp-fab {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background-color: var(--clr-whatsapp);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      transition: transform 0.3s ease;
+      animation: pulse-green 2s infinite;
+      text-decoration: none;
+    }
+    .whatsapp-fab:hover {
+      transform: scale(1.1);
+    }
+    .whatsapp-fab svg {
+      width: 32px;
+      height: 32px;
+      fill: #fff;
+    }
+
+    @media (max-width: 600px) {
+      .footer-content { flex-direction: column; gap: 10px; text-align: center; }
+      .footer-right { text-align: center; }
+      .whatsapp-fab { width: 50px; height: 50px; bottom: 20px; right: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -112,13 +169,26 @@
       <h3 class="section-title">Timeline History</h3>
       <div class="history-feed" id="history-ui"></div>
     </div>
-
     <div class="card">
       <h3 class="section-title">Case File Info</h3>
       <div class="case-info" id="case-ui"></div>
     </div>
   </div>
 </div>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-left">Developed by Johan de Beer</div>
+    <div class="footer-right">
+      Copyright &copy; 2025 Quick Source Holdings (Pty) Ltd.<br>
+      All Rights Reserved.
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/27785184118" class="whatsapp-fab" target="_blank" title="Chat with us on WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.438 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+</a>
 
 <script>
   const CSV_URL = 'https://raw.githubusercontent.com/johandebeer21/Tracker-Demo/refs/heads/main/tracker8.csv';
@@ -143,12 +213,10 @@
   function render(data) {
     if (!data || data.length === 0) return;
 
-    // 1. Core Info (from first row)
     const client = data[0];
     const fullName = `${client.Name} ${client.Surname}`;
-    const refCode = `${client.Surname.toUpperCase()}-N313`; // Matches your ref pattern
+    const refCode = `${client.Surname.toUpperCase()}-N313`;
 
-    // 2. Identify Current Status (Last task that isn't "Not started")
     const activeTasks = data.filter(d => d.Status !== 'Not started');
     const latestTask = activeTasks.length > 0 ? activeTasks[activeTasks.length - 1] : data[0];
 
@@ -156,7 +224,6 @@
     document.getElementById('c-name').textContent = fullName;
     document.getElementById('c-ref').textContent = refCode;
 
-    // 3. Stepper Logic
     const stepperContainer = document.getElementById('stepper-ui');
     stepperContainer.innerHTML = '';
     data.forEach(item => {
@@ -169,13 +236,11 @@
       stepperContainer.innerHTML += stepHtml;
     });
 
-    // 4. Timeline History (Reverse order for Feed)
     const historyContainer = document.getElementById('history-ui');
     historyContainer.innerHTML = '';
     let currentUpdateDate = "";
 
     [...data].reverse().forEach(item => {
-      // Create date group header if Updated at exists
       const updateAt = item['Updated at'] || "AWAITING UPDATE";
       if (updateAt !== currentUpdateDate) {
         historyContainer.innerHTML += `<div class="update-header">🗓️ UPDATED: ${updateAt}</div>`;
@@ -196,7 +261,6 @@
       historyContainer.innerHTML += entryHtml;
     });
 
-    // 5. Case File Info
     document.getElementById('case-ui').innerHTML = `
       <div class="info-row"><span class="info-label">Application</span><span class="info-value">${client['Application type']}</span></div>
       <div class="info-row"><span class="info-label">Assigned To</span><span class="info-value">${latestTask['Assignee'] || 'Processing...'}</span></div>
@@ -211,7 +275,7 @@
   }
 
   start();
-  setInterval(start, 60000); // Auto-refresh every 60 seconds
+  setInterval(start, 60000);
 </script>
 </body>
 </html>
