@@ -1,224 +1,217 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Application Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document Tracker | Official Client Portal</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(to right, #f3f4f6, #e0e7ff);
-      margin: 0; 
-      padding: 20px;
-      color: #1f2937;
+    :root {
+      --clr-done: #10b981;        /* Green */
+      --clr-progress: #2563eb;    /* Corporate Blue */
+      --clr-not-started: #dc2626; /* Alert Red */
+      --clr-dark: #0f172a;
+      --clr-bg: #f8fafc;
+      --clr-border: #e2e8f0;
+      --clr-text-muted: #64748b;
     }
 
-    h1 { 
-      font-weight: 700; 
-      font-size: 2rem; 
-      margin-bottom: 0.5rem; 
-      text-align: center; 
-      color: #111827; 
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--clr-bg); margin: 0; color: #1e293b; -webkit-font-smoothing: antialiased; }
+
+    /* Pulsating Blue Animation for In-Progress steps */
+    @keyframes pulse-blue {
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); transform: scale(1); }
+      70% { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); transform: scale(1.05); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); transform: scale(1); }
     }
 
-    .client-info {
-      background: #ffffff;
-      max-width: 600px;
-      margin: 0 auto 30px auto;
-      padding: 25px 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      text-align: center;
-      font-weight: 600;
-      font-size: 1.15rem;
-      color: #374151;
-      letter-spacing: 0.02em;
-      user-select: none;
-      transition: transform 0.3s ease;
-    }
+    .nav { background: var(--clr-dark); color: #fff; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .nav-logo { font-weight: 800; font-size: 1rem; letter-spacing: 1px; }
+    .nav-label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; }
 
-    .client-info:hover { transform: scale(1.01); }
+    .container { padding: 20px; max-width: 900px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 12px; border: 1px solid var(--clr-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; overflow: hidden; }
 
-    #search {
-      display: block;
-      max-width: 600px;
-      margin: 0 auto 30px auto;
-      width: 100%;
-      padding: 14px 20px;
-      font-size: 1rem;
-      border-radius: 12px;
-      border: 2px solid #e5e7eb;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      outline: none;
-    }
-    #search:focus { border-color: #3b82f6; box-shadow: 0 0 12px #3b82f6; }
+    /* Top Summary Section */
+    .header-section { padding: 40px 24px; text-align: center; border-bottom: 1px solid var(--clr-border); }
+    .live-badge { display: inline-block; background: #f1f5f9; padding: 5px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+    .main-status-text { margin: 0 0 20px 0; font-size: 2.4rem; font-weight: 900; text-transform: uppercase; color: var(--clr-dark); letter-spacing: -1px; }
+    .client-info-pills { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .pill { background: var(--clr-bg); border: 1px solid var(--clr-border); padding: 8px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: var(--clr-text-muted); }
+    .pill strong { color: var(--clr-dark); }
 
-    #app-list {
-      max-width: 1200px; /* wider for desktops */
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
+    /* Stepper Visualization */
+    .stepper-box { padding: 35px 24px; }
+    .stepper { position: relative; padding-left: 20px; border-left: 3px solid var(--clr-border); display: flex; flex-direction: column; gap: 30px; margin-left: 10px; }
+    
+    .step-item { display: flex; align-items: center; position: relative; margin-left: -33px; }
+    .step-dot { width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 3px solid var(--clr-border); z-index: 5; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+    
+    .step-item.done .step-dot { background: var(--clr-done); border-color: var(--clr-done); color: #fff; font-size: 14px; font-weight: bold; }
+    .step-item.in-progress .step-dot { border-color: var(--clr-progress); border-width: 4px; animation: pulse-blue 2s infinite; }
+    .step-item.not-started .step-dot { border-color: var(--clr-border); }
 
-    .skeleton-card {
-      background: linear-gradient(90deg, #eee 25%, #ddd 50%, #eee 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      height: 120px;
-      border-radius: 14px;
-    }
+    .step-label { margin-left: 18px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; color: var(--clr-dark); }
+    .step-item.not-started .step-label { color: var(--clr-text-muted); }
 
-    @keyframes shimmer { 0% {background-position: 200% 0;} 100% {background-position: -200% 0;} }
+    /* Bottom Grid Sections */
+    .grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+    @media (min-width: 768px) { .grid { grid-template-columns: 1.8fr 1fr; } }
 
-    .card {
-      background: white;
-      border-radius: 14px;
-      padding: 20px 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      position: relative;
-      overflow: hidden;
-      transform: translateY(40px) scale(0.95);
-      opacity: 0;
-      animation: fadeUpScale 0.5s forwards;
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
-    }
+    .section-title { background: #fcfdfe; padding: 16px 24px; border-bottom: 1px solid var(--clr-border); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--clr-dark); letter-spacing: 1px; }
 
-    .card:hover {
-      box-shadow: 0 24px 48px rgba(59, 130, 246, 0.3);
-      transform: translateY(-4px) scale(1.02);
-    }
+    /* Timeline History Feed */
+    .history-feed { padding: 24px; }
+    .update-group { margin-bottom: 30px; }
+    .update-header { font-weight: 900; font-size: 0.85rem; color: var(--clr-dark); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; gap: 10px; }
 
-    .task-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: #111827; }
-    .info-row { font-size: 0.9rem; margin-bottom: 6px; color: #4b5563; display: flex; justify-content: space-between; }
+    .event-card { display: flex; margin-bottom: 20px; align-items: flex-start; }
+    .event-dates { min-width: 140px; font-size: 0.72rem; font-weight: 700; color: var(--clr-text-muted); line-height: 1.5; text-transform: uppercase; }
+    .event-body { display: flex; flex-direction: column; }
+    .event-task-name { font-weight: 800; font-size: 0.95rem; color: var(--clr-dark); margin-bottom: 4px; }
+    
+    /* Status Text Colors */
+    .status-txt { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .status-txt.done { color: var(--clr-done); }
+    .status-txt.progress { color: var(--clr-progress); }
+    .status-txt.not { color: var(--clr-not-started); }
 
-    .status {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: white;
-      text-transform: uppercase;
-      user-select: none;
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
-    }
-
-    .Done { background: linear-gradient(270deg, #10b981, #14d79d, #10b981); background-size: 600% 600%; animation: pulseGradient 3s ease infinite; box-shadow: 0 0 12px #10b981cc; }
-    .Pending { background: linear-gradient(270deg, #fbbf24, #fde68a, #fbbf24); background-size: 600% 600%; animation: pulseGradient 3s ease infinite; box-shadow: 0 0 12px #fbbf24cc; }
-    .In-progress { background: linear-gradient(270deg, #3b82f6, #60a5fa, #3b82f6); background-size: 600% 600%; animation: pulseGradient 3s ease infinite; box-shadow: 0 0 12px #3b82f6cc; }
-    .Not-started { background: linear-gradient(270deg, #f59e0b, #fbbf24, #f59e0b); background-size: 600% 600%; animation: pulseGradient 3s ease infinite; box-shadow: 0 0 12px #f59e0bcc; }
-
-    @keyframes pulseGradient { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
-    @keyframes fadeUpScale { 0% { opacity: 0; transform: translateY(40px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
-
-    .disclaimer { margin-top: 40px; text-align: center; font-size: 0.95rem; color: #6b7280; animation: fadeIn 2s ease-in-out; }
-    @keyframes fadeIn { 0% {opacity: 0;} 100% {opacity: 1;} }
-
-    /* Extra styling for larger screens */
-    @media (min-width: 768px) {
-      body { padding: 30px; }
-      .client-info { padding: 30px 35px; font-size: 1.2rem; }
-    }
-    @media (min-width: 1024px) {
-      body { padding: 40px; }
-      .client-info { padding: 35px 40px; font-size: 1.25rem; }
-      .card { padding: 25px 30px; }
-      .task-title { font-size: 1.5rem; }
-      .info-row { font-size: 1rem; }
-    }
+    /* Sidebar Case File */
+    .case-info { padding: 24px; }
+    .info-row { margin-bottom: 18px; }
+    .info-label { font-size: 0.65rem; font-weight: 700; color: var(--clr-text-muted); text-transform: uppercase; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .info-value { font-size: 1rem; font-weight: 700; color: var(--clr-dark); }
   </style>
 </head>
 <body>
 
-<h1>Application Tracker</h1>
-<div class="client-info" id="client-info">Loading client info...</div>
-<input type="text" id="search" placeholder="Search tasks..." autocomplete="off" />
-<div id="app-list">
-  <div class="skeleton-card"></div>
-  <div class="skeleton-card"></div>
-  <div class="skeleton-card"></div>
+<nav class="nav">
+  <div class="nav-logo">DOCUMENT TRACKER</div>
+  <div class="nav-label">Client Portal</div>
+</nav>
+
+<div class="container">
+  <div class="card">
+    <div class="header-section">
+      <div class="live-badge">Live Document Status</div>
+      <h1 id="top-status">FETCHING...</h1>
+      <div class="client-info-pills">
+        <div class="pill">Client: <strong id="c-name">---</strong></div>
+        <div class="pill">Ref: <strong id="c-ref">---</strong></div>
+      </div>
+    </div>
+    <div class="stepper-box">
+      <div class="stepper" id="stepper-ui"></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3 class="section-title">Timeline History</h3>
+      <div class="history-feed" id="history-ui"></div>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">Case File Info</h3>
+      <div class="case-info" id="case-ui"></div>
+    </div>
+  </div>
 </div>
-<div class="disclaimer">📌 Developed by Johan de Beer. Data updates live from secure cloud storage.</div>
 
 <script>
   const CSV_URL = 'https://raw.githubusercontent.com/johandebeer21/Tracker-Demo/refs/heads/main/tracker8.csv';
-  let applications = [];
 
   function parseCSV(text) {
-    const lines = text.trim().split('\n').filter(line => line.trim() !== '');
+    const lines = text.trim().split('\n').filter(row => row.trim());
     const headers = lines.shift().split(',').map(h => h.trim());
-    return lines
-      .map(line => {
-        const data = line.split(',').map(d => d.trim());
-        const obj = {};
-        headers.forEach((h,i) => obj[h] = data[i] || '');
-        return obj;
-      })
-      .filter(app => app['Task']);
-  }
-
-  const appList = document.getElementById('app-list');
-  const searchInput = document.getElementById('search');
-  const clientInfoDiv = document.getElementById('client-info');
-
-  function renderClientInfo(apps) {
-    if (!apps.length) { clientInfoDiv.textContent = 'No client information found.'; return; }
-    const firstWithName = apps.find(a => a['Name'] || a['Surname'] || a['Application type']) || apps[0];
-    clientInfoDiv.innerHTML = `
-      <div><strong>Client Name:</strong> ${firstWithName['Name'] || '-'}</div>
-      <div><strong>Client Surname:</strong> ${firstWithName['Surname'] || '-'}</div>
-      <div><strong>Application Type:</strong> ${firstWithName['Application type'] || '-'}</div>
-    `;
-  }
-
-  function renderApps(list) {
-    if (!list.length) { appList.innerHTML = '<p>No applications found.</p>'; return; }
-    appList.innerHTML = '';
-    list.forEach((app,i) => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.style.animationDelay = `${i*0.1}s`;
-      const statusClass = app['Status'] ? app['Status'].replace(/\s+/g,'-') : 'Pending';
-      card.innerHTML = `
-        <h3 class="task-title">${app['Task']}</h3>
-        <div class="info-row"><span>Status:</span> <span class="status ${statusClass}">${app['Status']}</span></div>
-        <div class="info-row"><span>Assignee:</span> <span>${app['Assignee'] || '-'}</span></div>
-        <div class="info-row"><span>Due date:</span> <span>${app['Due date'] || '-'}</span></div>
-        <div class="info-row"><span>Updated at:</span> <span>${app['Updated at'] || '-'}</span></div>
-      `;
-      appList.appendChild(card);
+    return lines.map(line => {
+      const values = line.split(',').map(v => v.trim());
+      let obj = {};
+      headers.forEach((h, i) => obj[h] = values[i] || '');
+      return obj;
     });
   }
 
-  function fetchData() {
-    appList.innerHTML = '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>';
-    clientInfoDiv.textContent = 'Loading client info...';
-    fetch(CSV_URL + '?cacheBust=' + Date.now())
-      .then(res => res.ok ? res.text() : Promise.reject('Failed to fetch'))
-      .then(text => {
-        applications = parseCSV(text);
-        renderClientInfo(applications);
-        renderApps(applications);
-      })
-      .catch(err => { appList.innerHTML = '<p>Failed to load data.</p>'; clientInfoDiv.textContent = ''; console.error(err); });
+  function getStatusClass(status) {
+    if (status === 'Done') return 'done';
+    if (status === 'In progress') return 'progress';
+    return 'not';
   }
 
-  searchInput.addEventListener('input', () => {
-    const term = searchInput.value.toLowerCase();
-    const filtered = applications.filter(app => app['Task'].toLowerCase().includes(term));
-    renderApps(filtered);
-  });
+  function render(data) {
+    if (!data || data.length === 0) return;
 
-  fetchData();
-  setInterval(fetchData, 60000);
+    // 1. Core Info (from first row)
+    const client = data[0];
+    const fullName = `${client.Name} ${client.Surname}`;
+    const refCode = `${client.Surname.toUpperCase()}-N313`; // Matches your ref pattern
+
+    // 2. Identify Current Status (Last task that isn't "Not started")
+    const activeTasks = data.filter(d => d.Status !== 'Not started');
+    const latestTask = activeTasks.length > 0 ? activeTasks[activeTasks.length - 1] : data[0];
+
+    document.getElementById('top-status').textContent = latestTask.Status;
+    document.getElementById('c-name').textContent = fullName;
+    document.getElementById('c-ref').textContent = refCode;
+
+    // 3. Stepper Logic
+    const stepperContainer = document.getElementById('stepper-ui');
+    stepperContainer.innerHTML = '';
+    data.forEach(item => {
+      const statusClass = item.Status === 'Done' ? 'done' : (item.Status === 'In progress' ? 'in-progress' : 'not-started');
+      const stepHtml = `
+        <div class="step-item ${statusClass}">
+          <div class="step-dot">${item.Status === 'Done' ? '✓' : ''}</div>
+          <div class="step-label">${item.Task}</div>
+        </div>`;
+      stepperContainer.innerHTML += stepHtml;
+    });
+
+    // 4. Timeline History (Reverse order for Feed)
+    const historyContainer = document.getElementById('history-ui');
+    historyContainer.innerHTML = '';
+    let currentUpdateDate = "";
+
+    [...data].reverse().forEach(item => {
+      // Create date group header if Updated at exists
+      const updateAt = item['Updated at'] || "AWAITING UPDATE";
+      if (updateAt !== currentUpdateDate) {
+        historyContainer.innerHTML += `<div class="update-header">🗓️ UPDATED: ${updateAt}</div>`;
+        currentUpdateDate = updateAt;
+      }
+
+      const statusCls = getStatusClass(item.Status);
+      const entryHtml = `
+        <div class="event-card">
+          <div class="event-dates">
+            <div>DUE: ${item['Due date'] || '---'}</div>
+          </div>
+          <div class="event-body">
+            <span class="event-task-name">${item.Task}</span>
+            <span class="status-txt ${statusCls}">${item.Status}</span>
+          </div>
+        </div>`;
+      historyContainer.innerHTML += entryHtml;
+    });
+
+    // 5. Case File Info
+    document.getElementById('case-ui').innerHTML = `
+      <div class="info-row"><span class="info-label">Application</span><span class="info-value">${client['Application type']}</span></div>
+      <div class="info-row"><span class="info-label">Assigned To</span><span class="info-value">${latestTask['Assignee'] || 'Processing...'}</span></div>
+    `;
+  }
+
+  function start() {
+    fetch(CSV_URL + '?t=' + Date.now())
+      .then(r => r.text())
+      .then(txt => render(parseCSV(txt)))
+      .catch(err => console.error("Update failed:", err));
+  }
+
+  start();
+  setInterval(start, 60000); // Auto-refresh every 60 seconds
 </script>
-
 </body>
 </html>
